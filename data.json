@@ -1,0 +1,44 @@
+{
+  "expenses": [
+    {
+      "id": 1,
+      "user_id": 916825252,
+      "amount": 12000.0,
+      "category": "بنزين",
+      "description": "اكل زائد جكاير",
+      "timestamp": "2026-04-27T18:02:37.590103"
+    }
+  ],
+  "incomes": [
+    {
+      "id": 1,
+      "user_id": 916825252,
+      "amount": 38000.0,
+      "note": "",
+      "timestamp": "2026-04-27T18:06:06.965326"
+    }
+  ],
+  "customers": [
+    {
+      "id": 1,
+      "user_id": 916825252,
+      "name": "07822856782",
+      "latitude": 34.130664,
+      "longitude": 42.375627,
+      "address": "الحي العسكري",
+      "notes": null,
+      "timestamp": "2026-04-27T18:35:10.180593"
+    }
+  ],
+  "users": [
+    {
+      "user_id": 916825252,
+      "chat_id": 916825252,
+      "reminders_enabled": false,
+      "registered_at": "2026-04-27T17:55:03.286815"
+    }
+  ],
+  "next_expense_id": 2,
+  "next_income_id": 2,
+  "next_customer_id": 2
+}
