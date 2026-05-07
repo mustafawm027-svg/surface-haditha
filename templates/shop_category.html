@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% set active_nav = 'shop' %}
+
+{% block extra_styles %}
+    .page-header { padding: 22px 20px 16px; display: flex; align-items: center; gap: 12px; }
+    .back-btn {
+        width: 36px; height: 36px; border-radius: 10px;
+        background: var(--surface); border: 1px solid var(--border);
+        display: flex; align-items: center; justify-content: center;
+        text-decoration: none; color: var(--text); flex-shrink: 0;
+    }
+    .back-btn svg { width: 18px; height: 18px; }
+    .page-header h1 { font-size: 20px; font-weight: 800; }
+    .products-list { padding: 0 20px; }
+    .product-card {
+        background: var(--surface); border: 1px solid var(--border);
+        border-radius: 16px; padding: 16px; margin-bottom: 12px;
+    }
+    .product-img {
+        width: 100%; height: 160px; border-radius: 10px; object-fit: cover;
+        margin-bottom: 12px; background: var(--surface2);
+    }
+    .product-name { font-size: 16px; font-weight: 800; }
+    .product-price { color: var(--accent); font-weight: 800; font-size: 18px; margin: 6px 0; }
+    .product-desc { font-size: 13px; color: var(--text-muted); line-height: 1.6; }
+    .product-foot { display: flex; justify-content: space-between; align-items: center; margin-top: 10px; font-size: 12px; color: var(--text-muted); }
+    .empty-state { text-align: center; padding: 60px 20px; color: var(--text-muted); }
+    .empty-state .icon { font-size: 48px; margin-bottom: 12px; }
+{% endblock %}
+
+{% block body %}
+<div class="page-header">
+    <a href="{{ url_for('shop') }}" class="back-btn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="9 18 15 12 9 6"/>
+        </svg>
+    </a>
+    <h1>{{ category }}</h1>
+</div>
+
+<div class="products-list">
+    {% if products %}
+        {% for p in products %}
+        <div class="product-card">
+            {% if p.image_url %}
+            <img src="{{ p.image_url }}" alt="{{ p.title }}" class="product-img">
+            {% endif %}
+            <div class="product-name">{{ p.title }}</div>
+            {% if p.price > 0 %}<div class="product-price">{{ "{:,.0f}".format(p.price) }} د.ع</div>{% endif %}
+            {% if p.description %}<p class="product-desc">{{ p.description }}</p>{% endif %}
+            <div class="product-foot">
+                <span>{{ p.merchant.name }}</span>
+                <span>{{ p.created_at.strftime('%Y/%m/%d') }}</span>
+            </div>
+        </div>
+        {% endfor %}
+    {% else %}
+        <div class="empty-state">
+            <div class="icon">🛍️</div>
+            <p>ما في منتجات في هذا التصنيف بعد</p>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
