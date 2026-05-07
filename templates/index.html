@@ -1,0 +1,305 @@
+{% extends "base.html" %}
+{% set active_nav = 'home' %}
+
+{% block extra_styles %}
+    .hero { padding: 22px 20px 8px; }
+    .hero h1 { font-size: 22px; font-weight: 800; line-height: 1.3; margin-bottom: 6px; }
+    .hero h1 .highlight { color: var(--accent); }
+    .hero p { color: var(--text-muted); font-size: 13px; margin-bottom: 16px; }
+    .search-bar {
+        background: var(--surface); border: 1px solid var(--border); border-radius: 14px;
+        padding: 12px 14px; display: flex; align-items: center; gap: 10px;
+    }
+    .search-bar svg { width: 18px; height: 18px; color: var(--text-muted); }
+    .search-bar input {
+        flex: 1; background: transparent; border: none; outline: none;
+        color: var(--text); font-family: inherit; font-size: 14px;
+    }
+    .search-bar input::placeholder { color: var(--text-muted); }
+
+    /* Main section cards */
+    .big-sections { padding: 22px 20px 0; display: grid; grid-template-columns: 1fr; gap: 12px; }
+    .big-card {
+        position: relative; overflow: hidden;
+        background: linear-gradient(135deg, var(--surface) 0%, #050505 100%);
+        border: 1.5px solid var(--accent);
+        border-radius: 20px; padding: 20px; cursor: pointer;
+        display: flex; align-items: center; gap: 16px;
+        transition: transform 0.2s; text-decoration: none; color: inherit;
+        box-shadow: 0 0 30px rgba(164, 255, 0, 0.08);
+    }
+    .big-card:active { transform: scale(0.98); }
+    .big-card::before {
+        content: ''; position: absolute; top: -40px; left: -40px;
+        width: 140px; height: 140px;
+        background: radial-gradient(circle, var(--accent-dim) 0%, transparent 70%);
+        pointer-events: none;
+    }
+    .big-card .ill {
+        width: 64px; height: 64px; border-radius: 16px;
+        background: var(--accent); display: flex; align-items: center; justify-content: center;
+        flex-shrink: 0; box-shadow: 0 0 22px var(--accent-glow); position: relative;
+    }
+    .big-card .ill svg { width: 32px; height: 32px; color: #000; }
+    .big-card .ill span { font-size: 30px; }
+    .big-card .body { flex: 1; min-width: 0; position: relative; }
+    .big-card .label { font-size: 11px; color: var(--accent); font-weight: 800; letter-spacing: 0.5px; }
+    .big-card h3 { font-size: 17px; font-weight: 800; margin: 4px 0; }
+    .big-card p { font-size: 12px; color: var(--text-muted); }
+    .big-card .arrow { color: var(--accent); font-size: 22px; font-weight: 800; }
+
+    /* Restaurant featured card — special teal style */
+    .rest-featured {
+        border-color: rgba(20,184,166,0.6);
+        background: linear-gradient(135deg, #0d1f1e 0%, #050505 100%);
+        box-shadow: 0 0 30px rgba(20,184,166,0.1);
+    }
+    .rest-featured::before {
+        background: radial-gradient(circle, rgba(20,184,166,0.1) 0%, transparent 70%);
+    }
+    .rest-featured .ill { background: #14b8a6; }
+    .rest-featured .label { color: #14b8a6; }
+    .rest-featured .arrow { color: #14b8a6; }
+
+    .section { padding: 22px 20px 0; }
+    .section-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+    .section-head h2 { font-size: 16px; font-weight: 700; }
+    .section-head .more { font-size: 12px; color: var(--accent); font-weight: 700; }
+
+    /* Open restaurants strip */
+    .rest-strip { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .rest-mini {
+        background: var(--surface); border: 1px solid var(--border);
+        border-radius: 16px; overflow: hidden; text-decoration: none; color: inherit;
+        transition: border-color 0.2s;
+    }
+    .rest-mini:active { border-color: #14b8a6; }
+    .rest-mini-img {
+        width: 100%; height: 80px; object-fit: cover;
+        background: linear-gradient(135deg, #1a1a1a, #222);
+        display: flex; align-items: center; justify-content: center; font-size: 28px;
+    }
+    .rest-mini-body { padding: 10px; }
+    .rest-mini-name { font-size: 13px; font-weight: 700; }
+    .rest-mini-open { font-size: 10px; color: var(--success); margin-top: 2px; }
+
+    .post-card {
+        background: var(--surface); border: 1px solid var(--border); border-radius: 16px;
+        padding: 14px; margin-bottom: 10px;
+    }
+    .post-card .post-head { display: flex; justify-content: space-between; align-items: start; gap: 10px; margin-bottom: 6px; }
+    .post-card h3 { font-size: 15px; font-weight: 700; }
+    .post-card .price { color: var(--accent); font-weight: 800; font-size: 14px; white-space: nowrap; }
+    .post-card .desc { font-size: 12px; color: var(--text-muted); line-height: 1.6; margin-bottom: 8px; }
+    .post-card .post-foot { display: flex; align-items: center; justify-content: space-between; font-size: 11px; color: var(--text-muted); }
+    .post-card .cat { background: var(--accent-dim); color: var(--accent); padding: 4px 10px; border-radius: 8px; font-weight: 700; }
+
+    .auth-cta {
+        margin: 18px 20px 0; padding: 14px;
+        background: var(--surface); border: 1px dashed var(--accent);
+        border-radius: 14px; text-align: center;
+    }
+    .auth-cta p { font-size: 13px; color: var(--text-muted); margin-bottom: 10px; }
+    .auth-cta a { color: var(--accent); font-weight: 800; font-size: 14px; }
+
+    .section, .hero, .big-sections { animation: fadeUp 0.4s ease both; }
+{% endblock %}
+
+{% block body %}
+<header class="header">
+    <div class="header-top">
+        <a href="{{ url_for('home') }}" class="logo">
+            <div class="logo-mark">
+                <img src="/static/icons/logo.png" alt="Logo"
+                     onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+                <svg viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2.5"
+                     stroke-linecap="round" stroke-linejoin="round" style="display:none;width:20px;height:20px">
+                    <path d="M3 12h4l3-9 4 18 3-9h4"/>
+                </svg>
+            </div>
+            <div class="logo-text">
+                <div class="brand">Surface <span class="accent">حديثة</span></div>
+                <div class="tag">
+                    {% if current_user.is_authenticated %}
+                        أهلاً {{ current_user.name }} • {{ current_user.role_label }}
+                    {% else %}
+                        كل خدمات حديثة بلمسة واحدة
+                    {% endif %}
+                </div>
+            </div>
+        </a>
+        <div class="header-actions">
+            {% if current_user.is_authenticated %}
+            <a href="{{ url_for('cart') }}" class="header-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/>
+                    <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
+                </svg>
+                {% if current_user.cart_count > 0 %}
+                <span class="cart-badge">{{ current_user.cart_count }}</span>
+                {% endif %}
+            </a>
+            {% endif %}
+            <a href="{{ url_for('auth.account') if current_user.is_authenticated else url_for('auth.login') }}" class="header-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                    <circle cx="12" cy="7" r="4"/>
+                </svg>
+            </a>
+        </div>
+    </div>
+
+    <div class="location-pill">
+        <span class="pin">
+            <svg viewBox="0 0 24 24" fill="currentColor" stroke="none">
+                <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
+            </svg>
+        </span>
+        <div class="text">
+            حديثة — العراق
+            <span class="muted">موقعك الحالي</span>
+        </div>
+        <span class="chev">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="6 9 12 15 18 9"/>
+            </svg>
+        </span>
+    </div>
+</header>
+
+<section class="hero">
+    <h1>هلا بيك! <br>شنو <span class="highlight">تحتاج</span> اليوم؟</h1>
+    <p>كل خدمات حديثة بمكان واحد.</p>
+    <div class="search-bar">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+        </svg>
+        <input type="text" placeholder="دور على فني، منتج، مطعم...">
+    </div>
+</section>
+
+{# ── الأقسام الرئيسية — 4 بطاقات كاملة ── #}
+<div class="big-sections">
+
+    {# المطاعم — أول قسم وأبرزها #}
+    <a href="{{ url_for('restaurants') }}" class="big-card rest-featured">
+        <div class="ill">
+            <span>🍽️</span>
+        </div>
+        <div class="body">
+            <div class="label">طلب أكل</div>
+            <h3>مطاعم حديثة</h3>
+            <p>منيو كامل، طلب مباشر، توصيل سريع للباب</p>
+        </div>
+        <span class="arrow" style="color:#14b8a6">‹</span>
+    </a>
+
+    {# الفنيين #}
+    <a href="{{ url_for('technicians') }}" class="big-card">
+        <div class="ill">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>
+            </svg>
+        </div>
+        <div class="body">
+            <div class="label">خدمات منزلية</div>
+            <h3>الفنيين والعمال</h3>
+            <p>كهربائي، سباك، بناء، صباغ، لحام وأكثر...</p>
+        </div>
+        <span class="arrow">‹</span>
+    </a>
+
+    {# السوق #}
+    <a href="{{ url_for('shop') }}" class="big-card">
+        <div class="ill">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/>
+                <line x1="3" y1="6" x2="21" y2="6"/>
+                <path d="M16 10a4 4 0 0 1-8 0"/>
+            </svg>
+        </div>
+        <div class="body">
+            <div class="label">تسوّق</div>
+            <h3>سوق حديثة</h3>
+            <p>إلكترونيات، ملابس، أدوية، غذائية، إنشائية...</p>
+        </div>
+        <span class="arrow">‹</span>
+    </a>
+
+    {# التوصيل #}
+    <a href="{{ url_for('delivery') }}" class="big-card">
+        <div class="ill">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="1" y="3" width="15" height="13"/>
+                <polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/>
+                <circle cx="5.5" cy="18.5" r="2.5"/>
+                <circle cx="18.5" cy="18.5" r="2.5"/>
+            </svg>
+        </div>
+        <div class="body">
+            <div class="label">توصيل سريع</div>
+            <h3>مندوبو التوصيل</h3>
+            <p>اطلب مندوب أو سجّل كمندوب وستلم طلبات</p>
+        </div>
+        <span class="arrow">‹</span>
+    </a>
+
+</div>
+
+{% if not current_user.is_authenticated %}
+<div class="auth-cta">
+    <p>سجّل حساب — اختر نوعك (زبون، تاجر، فني، أو مندوب)</p>
+    <a href="{{ url_for('auth.signup') }}">إنشاء حساب الآن ←</a>
+</div>
+{% endif %}
+
+{# ── مطاعم مفتوحة الآن ── #}
+{% if open_restaurants %}
+<section class="section">
+    <div class="section-head">
+        <h2>🟢 مطاعم مفتوحة الآن</h2>
+        <a href="{{ url_for('restaurants') }}" class="more" style="color:#14b8a6">شوف الكل ←</a>
+    </div>
+    <div class="rest-strip">
+        {% for r in open_restaurants %}
+        <a href="{{ url_for('restaurant_detail', rid=r.id) }}" class="rest-mini">
+            {% if r.logo_url %}
+            <img src="{{ r.logo_url }}" alt="{{ r.name }}" class="rest-mini-img">
+            {% else %}
+            <div class="rest-mini-img">🍽️</div>
+            {% endif %}
+            <div class="rest-mini-body">
+                <div class="rest-mini-name">{{ r.name }}</div>
+                <div class="rest-mini-open">● مفتوح</div>
+            </div>
+        </a>
+        {% endfor %}
+    </div>
+</section>
+{% endif %}
+
+{# ── أحدث منتجات السوق ── #}
+{% if latest_posts %}
+<section class="section">
+    <div class="section-head">
+        <h2>أحدث منتجات السوق</h2>
+        <a href="{{ url_for('shop') }}" class="more">شوف الكل ←</a>
+    </div>
+    {% for p in latest_posts %}
+    <div class="post-card">
+        <div class="post-head">
+            <h3>{{ p.title }}</h3>
+            {% if p.price > 0 %}<div class="price">{{ "{:,.0f}".format(p.price) }} د.ع</div>{% endif %}
+        </div>
+        {% if p.description %}<p class="desc">{{ p.description[:140] }}{% if p.description|length > 140 %}…{% endif %}</p>{% endif %}
+        <div class="post-foot">
+            <span>{{ p.merchant.name }}</span>
+            <span class="cat">{{ p.category }}</span>
+        </div>
+    </div>
+    {% endfor %}
+</section>
+{% endif %}
+
+<div style="height:10px"></div>
+{% endblock %}
