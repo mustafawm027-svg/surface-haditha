@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% set active_nav = 'account' %}
+
+{% block extra_styles %}
+    .auth-page { padding: 30px 20px; }
+    .auth-logo { text-align: center; margin-bottom: 30px; }
+    .auth-logo .mark {
+        width: 56px; height: 56px; border-radius: 16px;
+        background: var(--accent); display: flex; align-items: center; justify-content: center;
+        margin: 0 auto 12px; box-shadow: 0 0 24px var(--accent-glow);
+    }
+    .auth-logo .mark svg { width: 28px; height: 28px; }
+    .auth-logo h1 { font-size: 22px; font-weight: 800; }
+    .auth-logo p { font-size: 13px; color: var(--text-muted); margin-top: 4px; }
+    .auth-footer { text-align: center; margin-top: 20px; font-size: 13px; color: var(--text-muted); }
+    .auth-footer a { color: var(--accent); font-weight: 700; }
+{% endblock %}
+
+{% block body %}
+<div class="auth-page">
+    <div class="auth-logo">
+        <div class="mark">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M3 12h4l3-9 4 18 3-9h4"/>
+            </svg>
+        </div>
+        <h1>Surface <span style="color:var(--accent)">حديثة</span></h1>
+        <p>سجّل دخولك للمتابعة</p>
+    </div>
+
+    <form method="POST">
+        <div class="form-group">
+            <label>رقم الهاتف</label>
+            <input type="tel" name="phone" value="{{ form.get('phone','') }}" placeholder="07xxxxxxxxx" required>
+        </div>
+        <div class="form-group">
+            <label>الباسورد</label>
+            <input type="password" name="password" placeholder="••••••" required>
+        </div>
+        <button type="submit" class="btn btn-primary">دخول</button>
+    </form>
+
+    <div class="auth-footer">
+        ما عندك حساب؟ <a href="{{ url_for('auth.signup') }}">سجّل الآن</a>
+    </div>
+</div>
+{% endblock %}
