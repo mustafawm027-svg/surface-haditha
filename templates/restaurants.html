@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+{% set active_nav = 'restaurants' %}
+
+{% block extra_styles %}
+    .page-header { padding: 22px 20px 16px; }
+    .page-header h1 { font-size: 22px; font-weight: 800; }
+    .page-header p { font-size: 13px; color: var(--text-muted); margin-top: 4px; }
+    .rest-list { padding: 0 20px; }
+    .rest-card {
+        background: var(--surface); border: 1px solid var(--border);
+        border-radius: 20px; overflow: hidden; margin-bottom: 14px;
+        text-decoration: none; color: inherit; display: block;
+        transition: border-color 0.2s;
+    }
+    .rest-card:active { border-color: var(--accent); }
+    .rest-banner {
+        width: 100%; height: 120px; object-fit: cover;
+        background: linear-gradient(135deg, #1a1a1a, #222);
+        display: flex; align-items: center; justify-content: center;
+        font-size: 40px;
+    }
+    .rest-body { padding: 14px 16px; }
+    .rest-top { display: flex; align-items: center; gap: 10px; margin-bottom: 6px; }
+    .rest-logo {
+        width: 44px; height: 44px; border-radius: 12px;
+        object-fit: cover; background: var(--accent);
+        display: flex; align-items: center; justify-content: center;
+        font-size: 20px; font-weight: 800; color: #000; flex-shrink: 0;
+    }
+    .rest-name { font-size: 16px; font-weight: 800; }
+    .rest-open {
+        margin-right: auto; font-size: 11px; font-weight: 700;
+        padding: 3px 10px; border-radius: 8px;
+    }
+    .open-yes { background: rgba(34,197,94,0.12); color: var(--success); }
+    .open-no  { background: rgba(255,68,68,0.12); color: var(--danger); }
+    .rest-meta { font-size: 12px; color: var(--text-muted); }
+    .empty-state { text-align: center; padding: 60px 20px; color: var(--text-muted); }
+    .empty-state .icon { font-size: 48px; margin-bottom: 12px; }
+{% endblock %}
+
+{% block body %}
+<div class="page-header">
+    <h1>🍽️ مطاعم حديثة</h1>
+    <p>اطلب وجبتك وتوصلك على الباب</p>
+</div>
+
+<div class="rest-list">
+    {% if restaurants %}
+        {% for r in restaurants %}
+        <a href="{{ url_for('restaurant_detail', rid=r.id) }}" class="rest-card">
+            {% if r.logo_url %}
+            <img src="{{ r.logo_url }}" alt="{{ r.name }}" class="rest-banner">
+            {% else %}
+            <div class="rest-banner">🍽️</div>
+            {% endif %}
+            <div class="rest-body">
+                <div class="rest-top">
+                    <div class="rest-logo">{{ r.name[0] }}</div>
+                    <div>
+                        <div class="rest-name">{{ r.name }}</div>
+                        {% if r.area %}<div class="rest-meta">📍 {{ r.area }}</div>{% endif %}
+                    </div>
+                    <span class="rest-open {% if r.is_open %}open-yes{% else %}open-no{% endif %}">
+                        {% if r.is_open %}مفتوح{% else %}مغلق{% endif %}
+                    </span>
+                </div>
+                {% if r.description %}<p class="rest-meta">{{ r.description[:80] }}{% if r.description|length > 80 %}…{% endif %}</p>{% endif %}
+            </div>
+        </a>
+        {% endfor %}
+    {% else %}
+        <div class="empty-state">
+            <div class="icon">🍽️</div>
+            <p>ما في مطاعم مسجلة بعد</p>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
