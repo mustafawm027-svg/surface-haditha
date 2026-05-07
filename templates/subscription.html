@@ -1,0 +1,108 @@
+{% extends "base.html" %}
+{% set active_nav = 'account' %}
+
+{% block extra_styles %}
+    .page-header { padding: 22px 20px 16px; }
+    .page-header h1 { font-size: 22px; font-weight: 800; }
+    .page-header p { font-size: 13px; color: var(--text-muted); margin-top: 4px; }
+    .current-plan {
+        margin: 0 20px 20px; padding: 16px;
+        background: var(--surface); border: 1px solid var(--border); border-radius: 16px;
+        display: flex; align-items: center; gap: 12px;
+    }
+    .plan-icon { font-size: 28px; }
+    .plan-info .title { font-size: 16px; font-weight: 800; }
+    .plan-info .sub { font-size: 12px; color: var(--text-muted); }
+    .plans-list { padding: 0 20px; }
+    .plan-card {
+        background: var(--surface); border: 1.5px solid var(--border);
+        border-radius: 20px; padding: 20px; margin-bottom: 14px;
+        position: relative; overflow: hidden;
+    }
+    .plan-card.plus { border-color: rgba(59,130,246,0.4); }
+    .plan-card.vip  { border-color: rgba(168,85,247,0.4); background: linear-gradient(135deg, #111, #1a0f2e); }
+    .plan-tag {
+        position: absolute; top: 16px; left: 16px;
+        font-size: 11px; font-weight: 800; padding: 4px 10px; border-radius: 8px;
+    }
+    .plus-tag { background: rgba(59,130,246,0.15); color: #60a5fa; }
+    .vip-tag  { background: rgba(168,85,247,0.15); color: #c084fc; }
+    .plan-card h2 { font-size: 24px; font-weight: 800; margin-bottom: 4px; }
+    .plan-price { font-size: 28px; font-weight: 800; color: var(--accent); margin: 10px 0; }
+    .plan-price span { font-size: 14px; color: var(--text-muted); font-weight: 400; }
+    .plan-features { list-style: none; margin-bottom: 16px; }
+    .plan-features li { font-size: 13px; color: var(--text-muted); padding: 5px 0; display: flex; gap: 8px; }
+    .plan-features li::before { content: '✓'; color: var(--accent); font-weight: 800; }
+    .upgrade-btn {
+        display: block; text-align: center; padding: 13px;
+        border-radius: 12px; font-size: 14px; font-weight: 700;
+        cursor: pointer; border: none; font-family: inherit; width: 100%;
+    }
+    .plus-btn { background: rgba(59,130,246,0.2); color: #60a5fa; }
+    .vip-btn  { background: rgba(168,85,247,0.2); color: #c084fc; }
+    .active-badge {
+        display: block; text-align: center; padding: 13px;
+        border-radius: 12px; font-size: 14px; font-weight: 700;
+        background: var(--accent-dim); color: var(--accent);
+    }
+{% endblock %}
+
+{% block body %}
+<div class="page-header">
+    <h1>اشتراكاتي</h1>
+    <p>ارفع مستواك واحصل على مزايا أكثر</p>
+</div>
+
+<div class="current-plan">
+    <span class="plan-icon">{% if current_plan == 'vip' %}👑{% elif current_plan == 'plus' %}⭐{% else %}🆓{% endif %}</span>
+    <div class="plan-info">
+        <div class="title">خطتك الحالية: {{ plans[current_plan] }}</div>
+        <div class="sub">{% if current_plan == 'free' %}قم بالترقية للحصول على مزايا أكثر{% else %}اشتراك نشط{% endif %}</div>
+    </div>
+</div>
+
+<div class="plans-list">
+    <!-- Plus -->
+    <div class="plan-card plus">
+        <span class="plan-tag plus-tag">⭐ PLUS</span>
+        <h2 style="margin-top:20px">Plus</h2>
+        <div class="plan-price">{{ "{:,.0f}".format(prices['plus']) }} <span>د.ع / شهر</span></div>
+        <ul class="plan-features">
+            <li>ظهور متقدم في نتائج البحث</li>
+            <li>شارة Plus على ملفك</li>
+            <li>دعم أولوية</li>
+            <li>إحصائيات مبيعاتك</li>
+        </ul>
+        {% if current_plan == 'plus' or current_plan == 'vip' %}
+        <span class="active-badge">✓ مفعّل</span>
+        {% else %}
+        <form method="POST" action="{{ url_for('auth.subscription_upgrade') }}">
+            <input type="hidden" name="plan" value="plus">
+            <button type="submit" class="upgrade-btn plus-btn">الترقية لـ Plus</button>
+        </form>
+        {% endif %}
+    </div>
+
+    <!-- VIP -->
+    <div class="plan-card vip">
+        <span class="plan-tag vip-tag">👑 VIP</span>
+        <h2 style="margin-top:20px;color:#c084fc">VIP</h2>
+        <div class="plan-price" style="color:#c084fc">{{ "{:,.0f}".format(prices['vip']) }} <span>د.ع / شهر</span></div>
+        <ul class="plan-features">
+            <li>كل مزايا Plus</li>
+            <li>ظهور في الصفحة الرئيسية</li>
+            <li>شارة VIP الذهبية</li>
+            <li>أولوية في موافقة المنشورات</li>
+            <li>تخفيض عمولة المبيعات 50%</li>
+        </ul>
+        {% if current_plan == 'vip' %}
+        <span class="active-badge" style="color:#c084fc;background:rgba(168,85,247,0.1)">✓ مفعّل</span>
+        {% else %}
+        <form method="POST" action="{{ url_for('auth.subscription_upgrade') }}">
+            <input type="hidden" name="plan" value="vip">
+            <button type="submit" class="upgrade-btn vip-btn">الترقية لـ VIP 👑</button>
+        </form>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
