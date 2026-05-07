@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% set active_nav = 'shop' %}
+
+{% block extra_styles %}
+    .page-header { padding: 22px 20px 16px; }
+    .page-header h1 { font-size: 22px; font-weight: 800; }
+    .page-header p { font-size: 13px; color: var(--text-muted); margin-top: 4px; }
+    .categories-grid { padding: 0 20px; display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .cat-card {
+        background: var(--surface); border: 1px solid var(--border);
+        border-radius: 18px; padding: 20px 16px;
+        text-decoration: none; color: inherit; display: block;
+        transition: all 0.2s; position: relative; overflow: hidden;
+    }
+    .cat-card:active { border-color: var(--accent); transform: scale(0.97); }
+    .cat-icon { font-size: 32px; margin-bottom: 10px; }
+    .cat-name { font-size: 14px; font-weight: 800; }
+    .cat-card::after {
+        content: '‹'; position: absolute; bottom: 14px; left: 14px;
+        color: var(--accent); font-size: 18px; font-weight: 800;
+    }
+{% endblock %}
+
+{% block body %}
+<div class="page-header">
+    <h1>سوق حديثة</h1>
+    <p>اختر التصنيف اللي تبي</p>
+</div>
+
+<div class="categories-grid">
+    {% set icons = {
+        'إلكترونيات': '📱',
+        'ملابس رجالية': '👔',
+        'ملابس أطفال': '👶',
+        'أحذية وحقائب': '👟',
+        'أدوية': '💊',
+        'مواد غذائية': '🛒',
+        'مخضر': '🥦',
+        'مواد إنشائية': '🧱',
+        'كماليات': '✨'
+    } %}
+    {% for cat in categories %}
+    <a href="{{ url_for('shop_category', category=cat) }}" class="cat-card">
+        <div class="cat-icon">{{ icons.get(cat, '🛍️') }}</div>
+        <div class="cat-name">{{ cat }}</div>
+    </a>
+    {% endfor %}
+</div>
+{% endblock %}
