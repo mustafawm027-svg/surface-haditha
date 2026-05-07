@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% set active_nav = 'account' %}
+
+{% block extra_styles %}
+    .page-header { padding: 22px 20px 16px; display: flex; align-items: center; gap: 12px; }
+    .back-btn { width: 36px; height: 36px; border-radius: 10px; background: var(--surface); border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; text-decoration: none; color: var(--text); }
+    .back-btn svg { width: 18px; height: 18px; }
+    .page-header h1 { font-size: 20px; font-weight: 800; }
+    .form-page { padding: 0 20px 20px; }
+    #preview-img { width: 100%; height: 140px; object-fit: cover; border-radius: 12px; display: none; margin-bottom: 10px; }
+{% endblock %}
+
+{% block body %}
+<div class="page-header">
+    <a href="{{ url_for('auth.dashboard') }}" class="back-btn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+    </a>
+    <h1>مطعم جديد</h1>
+</div>
+
+<div class="form-page">
+    <form method="POST">
+        <div class="form-group">
+            <label>اسم المطعم</label>
+            <input type="text" name="name" value="{{ form.get('name','') }}" placeholder="مثال: مطعم البيت" required>
+        </div>
+        <div class="form-group">
+            <label>الوصف</label>
+            <textarea name="description" placeholder="اكتب وصف المطعم...">{{ form.get('description','') }}</textarea>
+        </div>
+        <div class="form-group">
+            <label>رقم الهاتف</label>
+            <input type="tel" name="phone" value="{{ form.get('phone','') }}" placeholder="07xxxxxxxxx">
+        </div>
+        <div class="form-group">
+            <label>المنطقة</label>
+            <input type="text" name="area" value="{{ form.get('area','') }}" placeholder="مثال: حديثة — حي المعلمين">
+        </div>
+        <div class="form-group">
+            <label>صورة غلاف المطعم</label>
+            <img id="preview-img" src="" alt="">
+            <input type="file" id="img-file" accept="image/*" style="display:none">
+            <button type="button" class="upload-btn" onclick="document.getElementById('img-file').click()">
+                📷 ارفع صورة (يضغط تلقائياً)
+            </button>
+            <input type="hidden" name="logo_url" id="logo_url" value="{{ form.get('logo_url','') }}">
+        </div>
+        <button type="submit" class="btn btn-primary">إضافة المطعم</button>
+    </form>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>initImageUpload("img-file", "preview-img", "logo_url");</script>
+{% endblock %}
