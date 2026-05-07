@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+{% set active_nav = 'account' %}
+
+{% block extra_styles %}
+    .admin-header { padding: 22px 20px 10px; display: flex; justify-content: space-between; align-items: center; }
+    .admin-header h1 { font-size: 22px; font-weight: 800; }
+    .pending-btn {
+        background: var(--danger); color: #fff; font-size: 12px; font-weight: 700;
+        padding: 8px 14px; border-radius: 10px; text-decoration: none;
+        display: flex; align-items: center; gap: 6px;
+    }
+    .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; padding: 0 20px 20px; }
+    .stat-card { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 14px 12px; text-align: center; }
+    .stat-num  { font-size: 22px; font-weight: 800; color: var(--accent); }
+    .stat-lbl  { font-size: 11px; color: var(--text-muted); margin-top: 4px; }
+    .section-title { font-size: 14px; font-weight: 700; color: var(--text-muted); padding: 0 20px; margin-bottom: 10px; }
+    .user-list { padding: 0 20px; }
+    .user-row  { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 14px; margin-bottom: 10px; }
+    .user-info { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; }
+    .user-av   { width: 40px; height: 40px; border-radius: 12px; background: var(--accent); display: flex; align-items: center; justify-content: center; font-size: 18px; font-weight: 800; color: #000; flex-shrink: 0; }
+    .user-name { font-weight: 700; font-size: 14px; }
+    .user-phone { font-size: 12px; color: var(--text-muted); }
+    .role-pill { display: inline-block; font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 8px; background: var(--accent-dim); color: var(--accent); }
+    .admin-actions { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+    .admin-actions select { flex: 1; background: var(--surface2); border: 1px solid var(--border); border-radius: 10px; padding: 8px 10px; color: var(--text); font-family: inherit; font-size: 12px; }
+    .admin-actions button { font-size: 12px; font-weight: 700; padding: 8px 14px; border-radius: 10px; cursor: pointer; font-family: inherit; border: none; }
+    .btn-promote { background: var(--accent-dim); color: var(--accent); }
+    .btn-del-user { background: rgba(255,68,68,0.12); color: var(--danger); }
+{% endblock %}
+
+{% block body %}
+<div class="admin-header">
+    <h1>لوحة الإدارة</h1>
+    {% if stats.pending_posts > 0 %}
+    <a href="{{ url_for('auth.admin_posts') }}" class="pending-btn">
+        {{ stats.pending_posts }} معلق
+    </a>
+    {% endif %}
+</div>
+
+<div class="stats-grid">
+    <div class="stat-card"><div class="stat-num">{{ stats.total_users }}</div><div class="stat-lbl">كل المستخدمين</div></div>
+    <div class="stat-card"><div class="stat-num">{{ stats.merchants }}</div><div class="stat-lbl">التجار</div></div>
+    <div class="stat-card"><div class="stat-num">{{ stats.customers }}</div><div class="stat-lbl">الزبائن</div></div>
+    <div class="stat-card"><div class="stat-num">{{ stats.technicians }}</div><div class="stat-lbl">الفنيين</div></div>
+    <div class="stat-card"><div class="stat-num">{{ stats.delivery }}</div><div class="stat-lbl">المندوبين</div></div>
+    <div class="stat-card"><div class="stat-num">{{ stats.total_orders }}</div><div class="stat-lbl">الطلبات</div></div>
+</div>
+
+<p class="section-title">المستخدمين</p>
+<div class="user-list">
+    {% for u in users %}
+    <div class="user-row">
+        <div class="user-info">
+            <div class="user-av">{{ u.name[0] }}</div>
+            <div>
+                <div class="user-name">{{ u.name }}</div>
+                <div class="user-phone">{{ u.phone }}</div>
+            </div>
+            <span class="role-pill" style="margin-right:auto">{{ u.role_label }}</span>
+        </div>
+        <div class="admin-actions">
+            <form method="POST" action="{{ url_for('auth.admin_promote', user_id=u.id) }}" style="display:flex;gap:8px;flex:1">
+                <select name="role">
+                    <option value="customer"   {% if u.role=='customer'   %}selected{% endif %}>زبون</option>
+                    <option value="merchant"   {% if u.role=='merchant'   %}selected{% endif %}>تاجر</option>
+                    <option value="technician" {% if u.role=='technician' %}selected{% endif %}>فني</option>
+                    <option value="delivery"   {% if u.role=='delivery'   %}selected{% endif %}>مندوب</option>
+                    <option value="admin"      {% if u.role=='admin'      %}selected{% endif %}>مدير</option>
+                </select>
+                <button type="submit" class="btn-promote">تغيير</button>
+            </form>
+            {% if u.id != current_user.id %}
+            <form method="POST" action="{{ url_for('auth.admin_delete_user', user_id=u.id) }}">
+                <button type="submit" class="btn-del-user" onclick="return confirm('حذف {{ u.name }}؟')">حذف</button>
+            </form>
+            {% endif %}
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}
