@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+{% set active_nav = 'tech' %}
+
+{% block extra_styles %}
+    .page-header { padding: 22px 20px 16px; }
+    .page-header h1 { font-size: 22px; font-weight: 800; }
+    .page-header p { font-size: 13px; color: var(--text-muted); margin-top: 4px; }
+    .tech-list { padding: 0 20px; }
+    .tech-card {
+        background: var(--surface); border: 1px solid var(--border);
+        border-radius: 18px; padding: 16px; margin-bottom: 12px;
+        display: flex; gap: 14px; align-items: flex-start;
+    }
+    .tech-avatar {
+        width: 52px; height: 52px; border-radius: 15px;
+        background: var(--accent); display: flex; align-items: center; justify-content: center;
+        font-size: 22px; font-weight: 800; color: #000; flex-shrink: 0;
+    }
+    .tech-body { flex: 1; min-width: 0; }
+    .tech-name { font-size: 16px; font-weight: 800; }
+    .craft-badge {
+        display: inline-block; margin: 4px 0;
+        background: var(--accent-dim); color: var(--accent);
+        font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 8px;
+    }
+    .tech-bio { font-size: 12px; color: var(--text-muted); line-height: 1.6; margin-top: 4px; }
+    .tech-meta { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+    .tech-meta span {
+        font-size: 11px; color: var(--text-muted);
+        background: var(--surface2); padding: 4px 10px; border-radius: 8px;
+        display: flex; align-items: center; gap: 4px;
+    }
+    .empty-state { text-align: center; padding: 60px 20px; color: var(--text-muted); }
+    .empty-state .icon { font-size: 48px; margin-bottom: 12px; }
+    .empty-state p { font-size: 14px; }
+{% endblock %}
+
+{% block body %}
+<div class="page-header">
+    <h1>الفنيين والعمال</h1>
+    <p>اختر الفني المناسب لشغلتك</p>
+</div>
+
+<div class="tech-list">
+    {% if techs %}
+        {% for t in techs %}
+        <div class="tech-card">
+            <div class="tech-avatar">{{ t.name[0] }}</div>
+            <div class="tech-body">
+                <div class="tech-name">{{ t.name }}</div>
+                {% if t.craft %}<span class="craft-badge">{{ t.craft }}</span>{% endif %}
+                {% if t.bio %}<p class="tech-bio">{{ t.bio[:120] }}{% if t.bio|length > 120 %}…{% endif %}</p>{% endif %}
+                <div class="tech-meta">
+                    {% if t.experience_years %}<span>⏱ {{ t.experience_years }} سنة خبرة</span>{% endif %}
+                    {% if t.area %}<span>📍 {{ t.area }}</span>{% endif %}
+                    <span>📞 {{ t.phone }}</span>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    {% else %}
+        <div class="empty-state">
+            <div class="icon">🔧</div>
+            <p>ما في فنيين مسجلين بعد</p>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
