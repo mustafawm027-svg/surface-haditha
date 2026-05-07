@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+{% set active_nav = '' %}
+
+{% block extra_styles %}
+    .page-header { padding: 22px 20px 10px; display: flex; align-items: center; gap: 12px; }
+    .page-header h1 { font-size: 20px; font-weight: 800; }
+    .cart-list { padding: 0 20px; }
+    .cart-item {
+        background: var(--surface); border: 1px solid var(--border);
+        border-radius: 16px; padding: 14px 16px; margin-bottom: 10px;
+        display: flex; align-items: center; gap: 12px;
+    }
+    .cart-item-info { flex: 1; min-width: 0; }
+    .cart-item-name { font-size: 14px; font-weight: 700; }
+    .cart-item-price { font-size: 12px; color: var(--text-muted); margin-top: 3px; }
+    .cart-item-sub { font-size: 16px; font-weight: 800; color: var(--accent); }
+    .remove-btn {
+        width: 32px; height: 32px; border-radius: 8px;
+        background: rgba(255,68,68,0.12); border: none; cursor: pointer;
+        display: flex; align-items: center; justify-content: center;
+        color: var(--danger); font-size: 16px;
+    }
+    .cart-summary {
+        margin: 10px 20px 0;
+        background: var(--surface); border: 1px solid var(--border);
+        border-radius: 18px; padding: 16px;
+    }
+    .summary-row { display: flex; justify-content: space-between; font-size: 14px; margin-bottom: 8px; }
+    .summary-row.total { font-size: 18px; font-weight: 800; padding-top: 8px; border-top: 1px solid var(--border); }
+    .checkout-form { padding: 0 20px; margin-top: 16px; }
+    .empty-state { text-align: center; padding: 60px 20px; color: var(--text-muted); }
+    .empty-state .icon { font-size: 48px; margin-bottom: 12px; }
+    .qty-badge {
+        background: var(--accent-dim); color: var(--accent);
+        font-size: 11px; font-weight: 700; padding: 3px 8px; border-radius: 6px;
+        margin-right: 6px;
+    }
+{% endblock %}
+
+{% block body %}
+<div class="page-header">
+    <h1>🛒 السلة</h1>
+</div>
+
+{% if items %}
+<div class="cart-list">
+    {% for item in items %}
+    <div class="cart-item">
+        <div class="cart-item-info">
+            <div class="cart-item-name">
+                <span class="qty-badge">×{{ item.qty }}</span>{{ item.name }}
+            </div>
+            <div class="cart-item-price">{{ "{:,.0f}".format(item.price) }} د.ع × {{ item.qty }}</div>
+        </div>
+        <span class="cart-item-sub">{{ "{:,.0f}".format(item.subtotal) }}</span>
+        <form method="POST" action="{{ url_for('cart_remove', item_id=item.id) }}">
+            <button type="submit" class="remove-btn">✕</button>
+        </form>
+    </div>
+    {% endfor %}
+</div>
+
+<div class="cart-summary">
+    <div class="summary-row"><span>عدد الأصناف</span><span>{{ items|length }}</span></div>
+    <div class="summary-row"><span>رسوم التوصيل</span><span style="color:var(--success)">مجاني</span></div>
+    <div class="summary-row total"><span>الإجمالي</span><span style="color:var(--accent)">{{ "{:,.0f}".format(total) }} د.ع</span></div>
+</div>
+
+<div class="checkout-form">
+    <form method="POST" action="{{ url_for('cart_checkout') }}">
+        <div class="form-group">
+            <label>عنوان التوصيل</label>
+            <input type="text" name="address" placeholder="اكتب عنوانك بالتفصيل" required>
+        </div>
+        <div class="form-group">
+            <label>ملاحظة للمطعم (اختياري)</label>
+            <input type="text" name="note" placeholder="مثال: بدون بصل">
+        </div>
+        <button type="submit" class="btn btn-primary">تأكيد الطلب — {{ "{:,.0f}".format(total) }} د.ع</button>
+    </form>
+</div>
+{% else %}
+<div class="empty-state">
+    <div class="icon">🛒</div>
+    <p>السلة فارغة</p>
+    <a href="{{ url_for('restaurants') }}" class="btn btn-primary" style="max-width:200px;margin:20px auto 0">اطلب من المطاعم</a>
+</div>
+{% endif %}
+{% endblock %}
