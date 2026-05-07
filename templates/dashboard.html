@@ -1,0 +1,120 @@
+{% extends "base.html" %}
+{% set active_nav = 'account' %}
+
+{% block extra_styles %}
+    .page-header { padding: 22px 20px 16px; display: flex; justify-content: space-between; align-items: center; }
+    .page-header h1 { font-size: 20px; font-weight: 800; }
+    .add-btn {
+        background: var(--accent); color: #000;
+        font-size: 13px; font-weight: 700; padding: 9px 16px; border-radius: 12px;
+        text-decoration: none; display: flex; align-items: center; gap: 6px;
+    }
+    .tabs { display: flex; gap: 8px; padding: 0 20px 16px; }
+    .tab {
+        flex: 1; padding: 10px; border-radius: 12px; font-size: 13px; font-weight: 700;
+        border: 1px solid var(--border); background: var(--surface);
+        color: var(--text-muted); cursor: pointer; text-align: center; text-decoration: none;
+    }
+    .tab.active { background: var(--accent-dim); border-color: var(--accent); color: var(--accent); }
+    .posts-list { padding: 0 20px; }
+    .post-item {
+        background: var(--surface); border: 1px solid var(--border);
+        border-radius: 14px; padding: 14px 16px; margin-bottom: 10px;
+    }
+    .post-status {
+        display: inline-flex; align-items: center; gap: 4px;
+        font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 8px; margin-bottom: 6px;
+    }
+    .status-approved { background: rgba(34,197,94,0.12); color: var(--success); }
+    .status-pending  { background: rgba(251,191,36,0.12); color: #fbbf24; }
+    .post-item-head { display: flex; justify-content: space-between; align-items: start; gap: 10px; margin-bottom: 4px; }
+    .post-item-title { font-size: 15px; font-weight: 700; }
+    .post-item-price { color: var(--accent); font-weight: 800; white-space: nowrap; }
+    .post-item-cat { font-size: 11px; color: var(--text-muted); margin-bottom: 8px; }
+    .post-actions { display: flex; gap: 8px; }
+    .post-actions a, .post-actions button {
+        font-size: 12px; font-weight: 700; padding: 7px 14px;
+        border-radius: 10px; text-decoration: none; cursor: pointer;
+        font-family: inherit; border: none;
+    }
+    .btn-edit { background: var(--surface2); color: var(--text); border: 1px solid var(--border) !important; }
+    .btn-del  { background: rgba(255,68,68,0.12); color: var(--danger); }
+    .rest-item {
+        background: var(--surface); border: 1px solid var(--border);
+        border-radius: 14px; padding: 14px 16px; margin-bottom: 10px;
+        display: flex; align-items: center; justify-content: space-between;
+    }
+    .rest-name-dash { font-size: 15px; font-weight: 700; }
+    .rest-approved { font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 8px; }
+    .empty-state { text-align: center; padding: 50px 20px; color: var(--text-muted); }
+    .empty-state .icon { font-size: 44px; margin-bottom: 12px; }
+    .empty-state p { font-size: 14px; margin-bottom: 20px; }
+{% endblock %}
+
+{% block body %}
+<div class="page-header">
+    <h1>لوحة التحكم</h1>
+    <a href="{{ url_for('auth.new_post') }}" class="add-btn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px">
+            <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+        </svg>
+        منشور جديد
+    </a>
+</div>
+
+<!-- Restaurants section -->
+<p style="font-size:13px;font-weight:700;color:var(--text-muted);padding:0 20px;margin-bottom:10px">مطاعمي</p>
+<div class="posts-list">
+    {% if restaurants %}
+        {% for r in restaurants %}
+        <div class="rest-item">
+            <div>
+                <div class="rest-name-dash">🍽️ {{ r.name }}</div>
+                <div style="font-size:12px;color:var(--text-muted);margin-top:4px">{{ r.area or '' }}</div>
+            </div>
+            <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px">
+                <span class="rest-approved {% if r.approved %}status-approved{% else %}status-pending{% endif %}">
+                    {% if r.approved %}✓ معتمد{% else %}⏳ معلق{% endif %}
+                </span>
+                <a href="{{ url_for('auth.add_menu_item', rid=r.id) }}" style="font-size:12px;color:var(--accent);font-weight:700;text-decoration:none">+ صنف</a>
+            </div>
+        </div>
+        {% endfor %}
+    {% endif %}
+    <a href="{{ url_for('auth.new_restaurant') }}" class="menu-item" style="border-style:dashed;justify-content:center;gap:8px;margin-bottom:16px">
+        <span style="font-size:20px">🍽️</span>
+        <span style="font-size:14px;font-weight:700;color:var(--text-muted)">إضافة مطعم جديد</span>
+    </a>
+</div>
+
+<!-- Posts section -->
+<p style="font-size:13px;font-weight:700;color:var(--text-muted);padding:0 20px;margin-bottom:10px">منتجاتي في السوق</p>
+<div class="posts-list">
+    {% if posts %}
+        {% for p in posts %}
+        <div class="post-item">
+            <span class="post-status {% if p.approved %}status-approved{% else %}status-pending{% endif %}">
+                {% if p.approved %}✓ معتمد{% else %}⏳ بانتظار المدير{% endif %}
+            </span>
+            <div class="post-item-head">
+                <span class="post-item-title">{{ p.title }}</span>
+                {% if p.price > 0 %}<span class="post-item-price">{{ "{:,.0f}".format(p.price) }} د.ع</span>{% endif %}
+            </div>
+            <div class="post-item-cat">{{ p.category }} • {{ p.created_at.strftime('%Y/%m/%d') }}</div>
+            <div class="post-actions">
+                <a href="{{ url_for('auth.edit_post', post_id=p.id) }}" class="btn-edit">تعديل</a>
+                <form method="POST" action="{{ url_for('auth.delete_post', post_id=p.id) }}" style="display:inline">
+                    <button type="submit" class="btn-del" onclick="return confirm('تأكيد الحذف؟')">حذف</button>
+                </form>
+            </div>
+        </div>
+        {% endfor %}
+    {% else %}
+        <div class="empty-state">
+            <div class="icon">📦</div>
+            <p>ما نشرت أي منتج بعد</p>
+            <a href="{{ url_for('auth.new_post') }}" class="btn btn-primary" style="max-width:200px;margin:0 auto">أضف أول منتج</a>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
